@@ -1,4 +1,3 @@
-// src/services/apiService.js
 import axios from "axios";
 
 // Get the API URL from environment variables or use the default
@@ -54,8 +53,10 @@ export const contactService = {
   },
 };
 
-export default {
+const apiServices = {
   userService,
   vendorService,
   contactService,
 };
+
+export default apiServices;
