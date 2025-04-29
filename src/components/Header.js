@@ -1,57 +1,49 @@
 // src/components/Header.js
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Function to handle navigation to home page
+  const navigateToHome = () => {
+    window.location.pathname = "/";
+  };
 
   return (
     <header className="fixed w-full bg-snap-light shadow-md z-10">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center">
-          {/* iibsy Logo */}
-          <div className="mr-2 w-10 h-10">
-            <svg
-              viewBox="0 0 100 100"
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-full h-full"
-            >
-              <path
-                d="M98.5,48c-5.4-6.1-48-48-48-48S19.7,14.9,2,36.3s7.3,52.8,7.3,52.8s28.2,9.6,45.8-7.6S98.5,48,98.5,48z"
-                fill="#FF5C4D"
-              />
-              <circle cx="30" cy="78" r="16" fill="#FF5C4D" />
-              <circle cx="80" cy="78" r="16" fill="#FF5C4D" />
-            </svg>
+          {/* Clickable logo with onClick handler */}
+          <div
+            onClick={navigateToHome}
+            className="flex items-center cursor-pointer"
+          >
+            <img src="/logo.png" alt="iibsy logo" className="w-10 h-10 mr-2" />
+            <h1 className="text-3xl font-bold text-snap-red">iibsy</h1>
           </div>
-          <h1 className="text-3xl font-bold text-snap-red">iibsy</h1>
         </div>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation - updated with correct paths */}
         <nav className="hidden md:flex space-x-6">
           <a
-            href="#about"
+            href="/#about"
             className="text-snap-dark hover:text-snap-red transition duration-300"
           >
-            About
+            Ku Saabsan
           </a>
           <a
-            href="#users"
+            href="/#main"
             className="text-snap-dark hover:text-snap-red transition duration-300"
           >
-            For Users
+            Nagu Soo Biir
           </a>
-          <a
-            href="#vendors"
+          <Link
+            to="/contact"
             className="text-snap-dark hover:text-snap-red transition duration-300"
           >
-            For Vendors
-          </a>
-          <a
-            href="#contact"
-            className="text-snap-dark hover:text-snap-red transition duration-300"
-          >
-            Contact
-          </a>
+            Nala Soo Xiriir
+          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -78,33 +70,27 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - updated with correct paths */}
       {isMenuOpen && (
         <div className="md:hidden bg-snap-light py-2">
           <a
-            href="#about"
+            href="/#about"
             className="block text-snap-dark hover:text-snap-red px-4 py-2"
           >
-            About
+            Ku Saabsan
           </a>
           <a
-            href="#users"
+            href="/#main"
             className="block text-snap-dark hover:text-snap-red px-4 py-2"
           >
-            For Users
+            Nagu Soo Biir
           </a>
-          <a
-            href="#vendors"
+          <Link
+            to="/contact"
             className="block text-snap-dark hover:text-snap-red px-4 py-2"
           >
-            For Vendors
-          </a>
-          <a
-            href="#contact"
-            className="block text-snap-dark hover:text-snap-red px-4 py-2"
-          >
-            Contact
-          </a>
+            Nala Soo Xiriir
+          </Link>
         </div>
       )}
     </header>

@@ -6,7 +6,7 @@ const AboutSection = () => {
     <section id="about" className="py-16 px-4 bg-snap-lightgray">
       <div className="container mx-auto">
         <h2 className="text-3xl font-bold text-center mb-12 text-snap-dark">
-          About e-shop Platform
+          Ku Saabsan Platformka iibsy
         </h2>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -28,11 +28,11 @@ const AboutSection = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold mb-2 text-snap-dark">
-              Fast & Seamless
+              Dhakhso & Fududeyn
             </h3>
             <p className="text-snap-gray">
-              Connect with vendors and find what you need in seconds with our
-              intuitive mobile app.
+              Kula xiriir ganacsatada oo hel waxaad u baahan tahay dhowr
+              ilbiriqsi gudahood adiga oo adeegsanaya app-keena moobilka.
             </p>
           </div>
 
@@ -54,11 +54,11 @@ const AboutSection = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold mb-2 text-snap-dark">
-              Community Driven
+              Bulshada Hoggaaminaysa
             </h3>
             <p className="text-snap-gray">
-              Join a thriving marketplace community of users and trusted local
-              vendors.
+              Ku biir suuqa bulshada ee horumaraya ee isticmaalayaasha iyo
+              ganacsatada deegaanka ee la isku haleyn karo.
             </p>
           </div>
 
@@ -80,36 +80,48 @@ const AboutSection = () => {
               </svg>
             </div>
             <h3 className="text-xl font-semibold mb-2 text-snap-dark">
-              Secure & Reliable
+              Ammaan & La isku Haleyn Karo
             </h3>
             <p className="text-snap-gray">
-              Every transaction and interaction on our platform is secure and
-              backed by our guarantee.
+              Ganacsiga kasta iyo iskuxirnaanta platformkeena waa mid ammaan ah
+              oo lagu taageeray dammaanadeenna.
             </p>
           </div>
         </div>
 
         <div className="mt-16 bg-snap-light p-8 rounded-lg shadow-md">
           <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 mb-6 md:mb-0 md:pr-8">
-              <img
-                src="/api/placeholder/500/300"
-                alt="Electronic devices"
-                className="rounded-lg shadow-md"
-              />
+            <div className="md:w-1/2 mb-6 md:mb-0 md:pr-8 flex justify-center">
+              <div className="bg-snap-red bg-opacity-10 p-8 rounded-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-32 w-32 text-snap-red"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
             </div>
             <div className="md:w-1/2">
               <h3 className="text-2xl font-bold mb-4 text-snap-dark">
-                Elevate Your Tech Experience
+                Kor u Qaad Khibradaada Tiknoolajiyadda
               </h3>
               <p className="text-snap-gray mb-4">
-                Our platform connects you with trusted vendors offering the
-                latest electronic products and services. From smartphones to
-                laptops, audio devices to smart home solutions, find everything
-                tech under one roof.
+                Platformkeenu wuxuu kugu xidhaa ganacsatada lagu kalsoonaan karo
+                ee bixiya alaabta elektaroonigga iyo adeegyada ugu dambeeyay.
+                Laga bilaabo telefoonada casriga ah ilaa laptopyada, qalabka
+                maqalka ilaa qalabka guriga ee casriga ah, wax kasta oo
+                teknoolajiyad ah ka hel hal meel.
               </p>
               <div className="flex items-center text-snap-red">
-                <span>Learn more about our products</span>
+                <span>Wax badan ka baro alaabteenna</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 ml-2"

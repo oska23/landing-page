@@ -1,23 +1,52 @@
-// src/components/ContactForm.js
+// src/components/MainSection.js
 import React, { useState } from "react";
 
-const ContactForm = () => {
+const MainSection = () => {
+  const [activeTab, setActiveTab] = useState("user");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
-    subject: "",
-    message: "",
+    userType: "user",
+    interests: [],
+    businessName: "",
+    businessType: "",
+    marketingConsent: true,
   });
 
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleCheckboxChange = (e) => {
+    const { name, value, checked } = e.target;
+
+    // Handle marketing consent checkbox
+    if (name === "marketingConsent") {
+      setFormData((prev) => ({
+        ...prev,
+        marketingConsent: checked,
+      }));
+      return;
+    }
+
+    // Handle interests checkboxes
+    setFormData((prev) => {
+      if (checked) {
+        return { ...prev, interests: [...prev.interests, value] };
+      } else {
+        return {
+          ...prev,
+          interests: prev.interests.filter((interest) => interest !== value),
+        };
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -25,13 +54,8 @@ const ContactForm = () => {
     setError("");
 
     // Basic validation
-    if (
-      !formData.name ||
-      !formData.phone ||
-      !formData.subject ||
-      !formData.message
-    ) {
-      setError("All fields are required");
+    if (!formData.name || !formData.phone) {
+      setError("Name and phone number are required");
       return;
     }
 
@@ -43,7 +67,13 @@ const ContactForm = () => {
     }
 
     try {
-      const response = await fetch("/api/contact", {
+      // Different endpoints based on user type
+      const endpoint =
+        formData.userType === "user"
+          ? "/api/users/register"
+          : "/api/vendors/register";
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,11 +88,14 @@ const ContactForm = () => {
         setFormData({
           name: "",
           phone: "",
-          subject: "",
-          message: "",
+          userType: "user",
+          interests: [],
+          businessName: "",
+          businessType: "",
+          marketingConsent: true,
         });
       } else {
-        setError(data.message || "Error sending message. Please try again.");
+        setError(data.message || "Registration failed. Please try again.");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -71,21 +104,439 @@ const ContactForm = () => {
   };
 
   return (
-    <section id="contact" className="py-16 px-4 bg-snap-light">
-      <div className="container mx-auto max-w-5xl">
-        <div className="flex flex-col md:flex-row shadow-lg rounded-lg overflow-hidden">
-          <div className="md:w-1/3 bg-snap-red p-8 text-snap-light">
-            <h2 className="text-3xl font-bold mb-6">Get in Touch</h2>
-            <p className="mb-8">
-              Have questions about our platform? Contact us and we'll get back
-              to you as soon as possible.
-            </p>
+    <section id="main" className="py-16 px-4 bg-snap-lightgray">
+      <div className="container mx-auto">
+        <h2 className="text-3xl font-bold mb-10 text-center text-snap-dark">
+          Join the iibsy Platform
+        </h2>
 
-            <div className="space-y-4">
-              <div className="flex items-start">
+        {/* Tab Selector */}
+        <div className="flex justify-center mb-10">
+          <div className="bg-white rounded-lg shadow-md inline-flex p-1">
+            <button
+              onClick={() => setActiveTab("user")}
+              className={`px-6 py-2 rounded-md ${
+                activeTab === "user"
+                  ? "bg-snap-red text-white"
+                  : "bg-white text-snap-dark"
+              }`}
+            >
+              I'm a User
+            </button>
+            <button
+              onClick={() => setActiveTab("vendor")}
+              className={`px-6 py-2 rounded-md ${
+                activeTab === "vendor"
+                  ? "bg-snap-red text-white"
+                  : "bg-white text-snap-dark"
+              }`}
+            >
+              I'm a Vendor
+            </button>
+          </div>
+        </div>
+
+        {/* Features Section */}
+        {activeTab === "user" ? (
+          <div className="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-snap-light p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+              <div className="bg-snap-red bg-opacity-10 p-3 rounded-full mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 mr-3 flex-shrink-0"
+                  className="h-8 w-8 text-snap-red"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-snap-dark">
+                Discover New Products
+              </h3>
+              <p className="text-snap-gray">
+                Browse through thousands of products across multiple categories
+                from verified vendors.
+              </p>
+            </div>
+
+            <div className="bg-snap-light p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+              <div className="bg-snap-red bg-opacity-10 p-3 rounded-full mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-snap-red"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-snap-dark">
+                Direct Communication
+              </h3>
+              <p className="text-snap-gray">
+                Chat with vendors via WhatsApp for inquiries and customization.
+              </p>
+            </div>
+
+            <div className="bg-snap-light p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+              <div className="bg-snap-red bg-opacity-10 p-3 rounded-full mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-snap-red"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-snap-dark">
+                Secure Transactions
+              </h3>
+              <p className="text-snap-gray">
+                Protected payments, real-time order tracking, and money-back
+                guarantee.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-snap-light p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+              <div className="flex items-center justify-center w-14 h-14 bg-snap-red bg-opacity-10 rounded-full mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-snap-red"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-snap-dark">
+                1. Create Account
+              </h3>
+              <p className="text-snap-gray">
+                Register your business and create a vendor profile in minutes.
+              </p>
+            </div>
+
+            <div className="bg-snap-light p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+              <div className="flex items-center justify-center w-14 h-14 bg-snap-red bg-opacity-10 rounded-full mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-snap-red"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-snap-dark">
+                2. List Products
+              </h3>
+              <p className="text-snap-gray">
+                Add products with photos, descriptions, and pricing easily.
+              </p>
+            </div>
+
+            <div className="bg-snap-light p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+              <div className="flex items-center justify-center w-14 h-14 bg-snap-red bg-opacity-10 rounded-full mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-snap-red"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-snap-dark">
+                3. Start Selling
+              </h3>
+              <p className="text-snap-gray">
+                Receive orders via WhatsApp and grow your business with us.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Registration Form */}
+        <div className="max-w-xl mx-auto bg-snap-light p-6 rounded-lg shadow-md">
+          <h3 className="text-2xl font-semibold mb-4 text-snap-dark">
+            {activeTab === "user"
+              ? "Get Early Access"
+              : "Register Your Business"}
+          </h3>
+
+          {formSubmitted ? (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+              <p className="font-medium mb-1">Thank you for registering!</p>
+              <p>
+                We'll notify you when the iibsy Platform launches. Watch for
+                updates on your WhatsApp number.
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                  <p>{error}</p>
+                </div>
+              )}
+
+              <input
+                type="hidden"
+                name="userType"
+                value={activeTab}
+                onChange={handleChange}
+              />
+
+              <div className="mb-4">
+                <label htmlFor="name" className="block text-snap-gray mb-2">
+                  {activeTab === "vendor" ? "Contact Person" : "Full Name"}{" "}
+                  <span className="text-snap-red">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  placeholder={
+                    activeTab === "vendor"
+                      ? "Your full name"
+                      : "Enter your full name"
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-snap-red"
+                />
+              </div>
+
+              {activeTab === "vendor" && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="businessName"
+                    className="block text-snap-gray mb-2"
+                  >
+                    Business Name <span className="text-snap-red">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="businessName"
+                    name="businessName"
+                    value={formData.businessName}
+                    onChange={handleChange}
+                    required
+                    placeholder="Your business name"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-snap-red"
+                  />
+                </div>
+              )}
+
+              <div className="mb-4">
+                <label htmlFor="phone" className="block text-snap-gray mb-2">
+                  WhatsApp / Phone Number{" "}
+                  <span className="text-snap-red">*</span>
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  placeholder="+1 123 456 7890"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-snap-red"
+                />
+                <p className="text-xs text-snap-gray mt-1">
+                  We'll use this to notify you about our launch
+                </p>
+              </div>
+
+              {activeTab === "vendor" && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="businessType"
+                    className="block text-snap-gray mb-2"
+                  >
+                    Business Type <span className="text-snap-red">*</span>
+                  </label>
+                  <select
+                    id="businessType"
+                    name="businessType"
+                    value={formData.businessType}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-snap-red"
+                  >
+                    <option value="">Select a business type</option>
+                    <option value="electronics">Electronics/Tech Store</option>
+                    <option value="computers">Computer/Laptop Shop</option>
+                    <option value="mobile">Mobile/Smartphone Store</option>
+                    <option value="audio">Audio/Headphones</option>
+                    <option value="accessories">Tech Accessories</option>
+                    <option value="repairs">Repair Services</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              )}
+
+              {activeTab === "user" && (
+                <div className="mb-4">
+                  <p className="block text-snap-gray mb-2">
+                    I'm interested in (select all that apply):
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="interests"
+                        value="smartphones"
+                        checked={formData.interests.includes("smartphones")}
+                        onChange={handleCheckboxChange}
+                        className="mr-2"
+                      />
+                      <span className="text-snap-gray">Smartphones</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="interests"
+                        value="laptops"
+                        checked={formData.interests.includes("laptops")}
+                        onChange={handleCheckboxChange}
+                        className="mr-2"
+                      />
+                      <span className="text-snap-gray">Laptops</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="interests"
+                        value="audio"
+                        checked={formData.interests.includes("audio")}
+                        onChange={handleCheckboxChange}
+                        className="mr-2"
+                      />
+                      <span className="text-snap-gray">Audio Devices</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="interests"
+                        value="accessories"
+                        checked={formData.interests.includes("accessories")}
+                        onChange={handleCheckboxChange}
+                        className="mr-2"
+                      />
+                      <span className="text-snap-gray">Accessories</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-6">
+                <label className="flex items-start cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="marketingConsent"
+                    checked={formData.marketingConsent}
+                    onChange={handleCheckboxChange}
+                    className="mt-1 mr-2"
+                  />
+                  <span className="text-sm text-snap-gray">
+                    I agree to receive updates from iibsy Platform via WhatsApp
+                    or SMS. We'll never share your information with third
+                    parties.
+                  </span>
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-snap-red hover:bg-snap-dark text-snap-light font-bold py-3 px-4 rounded-md transition duration-300"
+              >
+                {activeTab === "user"
+                  ? "Join the Waitlist"
+                  : "Submit Application"}
+              </button>
+
+              <p className="text-xs text-center text-snap-gray mt-4">
+                Be among the first to experience iibsy when we launch!
+              </p>
+            </form>
+          )}
+
+          {/* Only show testimonials after form submission */}
+          {formSubmitted && (
+            <div className="mt-6">
+              <h4 className="text-lg font-medium text-snap-dark mb-3">
+                What Others Are Saying
+              </h4>
+              <div className="bg-snap-lightgray p-4 rounded">
+                <p className="text-snap-gray text-sm italic">
+                  "I've been using the beta version of iibsy for a month now.
+                  It's changed how I shop for tech - so much easier than
+                  visiting multiple stores!"
+                </p>
+                <p className="text-snap-dark font-medium text-sm mt-2">
+                  - Sarah K.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Contact section with WhatsApp and Email */}
+        <div id="contact" className="mt-16 text-center">
+          <h3 className="text-2xl font-semibold mb-4 text-snap-dark">
+            Questions? Get in Touch
+          </h3>
+          <p className="mb-6 text-snap-gray">
+            Contact us directly via WhatsApp or email
+          </p>
+
+          <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-8 items-center mb-8">
+            <div className="flex items-center">
+              <div className="bg-snap-red p-3 rounded-full mr-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -97,12 +548,20 @@ const ContactForm = () => {
                     d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                   />
                 </svg>
-                <span>+1 (555) 123-4567</span>
               </div>
-              <div className="flex items-start">
+              <a
+                href="https://wa.me/15551234567"
+                className="text-snap-dark hover:text-snap-red"
+              >
+                <span className="font-medium">WhatsApp:</span> +1 (555) 123-4567
+              </a>
+            </div>
+
+            <div className="flex items-center">
+              <div className="bg-snap-red p-3 rounded-full mr-3">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 mr-3 flex-shrink-0"
+                  className="h-6 w-6 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -111,195 +570,32 @@ const ContactForm = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-                <span>123 Tech Street, San Francisco, CA 94107</span>
               </div>
-            </div>
-
-            <div className="mt-12">
-              <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
-              <div className="flex space-x-4">
-                <a
-                  href="https://facebook.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-snap-light hover:text-snap-dark transition duration-300"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" />
-                  </svg>
-                </a>
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-snap-light hover:text-snap-dark transition duration-300"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.054 10.054 0 01-3.126 1.195 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                  </svg>
-                </a>
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-snap-light hover:text-snap-dark transition duration-300"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z" />
-                  </svg>
-                </a>
-                <a
-                  href="https://youtube.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-snap-light hover:text-snap-dark transition duration-300"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
-                  </svg>
-                </a>
-              </div>
+              <a
+                href="mailto:info@iibsy.com"
+                className="text-snap-dark hover:text-snap-red"
+              >
+                <span className="font-medium">Email:</span> info@iibsy.com
+              </a>
             </div>
           </div>
 
-          <div className="md:w-2/3 bg-white p-8">
-            <h3 className="text-2xl font-semibold mb-4 text-snap-dark">
-              Send us a Message
-            </h3>
-            {formSubmitted ? (
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                <p>
-                  Thank you for your message! We'll get back to you as soon as
-                  possible.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                {error && (
-                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    <p>{error}</p>
-                  </div>
-                )}
-
-                <div className="mb-4">
-                  <label htmlFor="name" className="block text-snap-gray mb-2">
-                    Your Name <span className="text-snap-red">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your full name"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-snap-red"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="phone" className="block text-snap-gray mb-2">
-                    WhatsApp / Phone Number{" "}
-                    <span className="text-snap-red">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    placeholder="+1 123 456 7890"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-snap-red"
-                  />
-                  <p className="text-xs text-snap-gray mt-1">
-                    We'll use this to respond to your inquiry
-                  </p>
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="subject"
-                    className="block text-snap-gray mb-2"
-                  >
-                    Subject <span className="text-snap-red">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    placeholder="What's your message about?"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-snap-red"
-                  />
-                </div>
-
-                <div className="mb-6">
-                  <label
-                    htmlFor="message"
-                    className="block text-snap-gray mb-2"
-                  >
-                    Message <span className="text-snap-red">*</span>
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows="5"
-                    placeholder="How can we help you?"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-snap-red"
-                  ></textarea>
-                </div>
-
-                <button
-                  type="submit"
-                  className="bg-snap-red hover:bg-snap-dark text-snap-light font-bold py-2 px-6 rounded-md transition duration-300"
-                >
-                  Send Message
-                </button>
-
-                <p className="text-xs text-gray-500 mt-4">
-                  By submitting this form, you agree to our
-                  <a href="/privacy-policy" className="text-snap-red mx-1">
-                    Privacy Policy
-                  </a>
-                  and consent to being contacted via the phone number provided.
-                </p>
-              </form>
-            )}
+          <div className="flex justify-center space-x-4">
+            <a
+              href="https://wa.me/15551234567"
+              className="bg-snap-red hover:bg-snap-dark text-snap-light font-bold py-2 px-6 rounded-md transition duration-300 inline-flex items-center"
+            >
+              <span>Message on WhatsApp</span>
+            </a>
+            <a
+              href="mailto:info@iibsy.com"
+              className="bg-snap-dark hover:bg-snap-red text-snap-light font-bold py-2 px-6 rounded-md transition duration-300 inline-flex items-center"
+            >
+              <span>Send Email</span>
+            </a>
           </div>
         </div>
       </div>
@@ -307,4 +603,4 @@ const ContactForm = () => {
   );
 };
 
-export default ContactForm;
+export default MainSection;
